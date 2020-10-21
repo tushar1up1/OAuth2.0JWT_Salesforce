@@ -1,37 +1,7 @@
-## Welcome to GitHub Pages
+## OAuth 2.0 JWT Bearer flow for Server to Server Integration for Salesforce report data
 
-You can use the [editor on GitHub](https://github.com/tushar1up1/OAuth2.0JWT_Salesforce/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
-### Markdown
+**This document will walk you through the steps required to connect to Salesforce using OAuth 2.0 JWT Bearer token. This would be server to server integration. In this process we Will send JSON WEB TOKEN to salesforce and will receive access token, this access token will be used with API endpoint to access the report data**
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/tushar1up1/OAuth2.0JWT_Salesforce/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+** Please note that there are many OAuth authorization flows (Ref:https://help.salesforce.com/articleView?id=remoteaccess_oauth_flows.htm&type=5). You need to decide which is suitable to your need. In my case, I want to authorize my server to access Salesforce data, this way I wanted to avoid sending username and password everytime to salesforce. This approach is more secure and require prior approval of client app, also it both server (salesforce server and our app server) will share client secret and certificate **

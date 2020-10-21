@@ -1,0 +1,287 @@
+<h1>
+    <strong>Following Steps are involved in Integration:</strong>
+</h1>
+<p>
+    <strong>1. </strong>
+    <strong>Salesforce Setup</strong>
+</p>
+<ul>
+    <li>
+        Login to salesforce
+    </li>
+    <li>
+        Go to Setup
+    </li>
+</ul>
+<p>
+    - Search word "App" (In Quick Find/Search)
+</p>
+<ul>
+    <li>
+        Go to Build =&gt; Create =&gt; Apps
+    </li>
+</ul>
+<p>
+    <img
+        src="file:///C:/Users/TUPADH~1/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png"
+        width="189"
+        height="607"
+    />
+</p>
+<ul>
+    <li>
+        Click New in Connected App
+    </li>
+    <li>
+        Fill in the required information:
+    </li>
+</ul>
+<p>
+    - Connected App Name
+</p>
+<p>
+    - API Name
+</p>
+<p>
+    - Contact Email
+</p>
+<p>
+    - Check: Enable OAuth setting
+</p>
+<p>
+    - Check: Enable for Device flow
+</p>
+<p>
+    - Callback Url:
+    <a href="https://oauthdebugger.com/debug">
+        https://oauthdebugger.com/debug
+    </a>
+</p>
+<p>
+    - Check: Use digital signature
+</p>
+<p>
+    - Select OAuth scopes: (Access and manage your data, perform requests on
+    your behalf at anytime- refresh_token, offline_access, Provide access to
+    your data via the Web)
+</p>
+<p>
+    <img
+        src="file:///C:/Users/TUPADH~1/AppData/Local/Temp/msohtmlclip1/01/clip_image003.jpg"
+        width="624"
+        height="518"
+        border="0"
+    />
+</p>
+<ul>
+    <li>
+        Click save
+    </li>
+    <li>
+        On the app page you will have app details:
+    </li>
+</ul>
+<p>
+    - On this page you will find Consumer key and Consumer Secret (will use
+    these values later)
+</p>
+<p>
+    - Copy the consumer key for later use
+</p>
+<ul>
+    <li>
+        Click on the app page, click Manage
+    </li>
+</ul>
+<p>
+    o Click Edit policies
+</p>
+<p>
+    o In the OAuth policies section, change permitted users to Admin approved
+    user are pre-authorized
+</p>
+<p>
+    o Click on Profiles
+</p>
+<p>
+    o On the application profile assignment page, assign the user profile that
+    will have an access to this app
+</p>
+<p>
+    o Save
+</p>
+<p>
+    <strong>2. </strong>
+    <strong>Generate private key/certificate pair</strong>
+</p>
+<p>
+    <strong> </strong>
+</p>
+<p>
+    Openssl req –x509 –nodes –sha256 –days 365 –newkey rsa:2048 –keyout
+    private.key –out x509cert.crt
+</p>
+<p>
+    We will deploy certificate to salesforce server and use private key to
+    generate signed JWT claim. Certificate will be used to validate the signed
+    JWT assertion.
+</p>
+<p>
+    <strong>3. </strong>
+    <strong>OAuth access configuration </strong>
+</p>
+<p>
+    · Login to salesforce and upload the certificate created in step # 2
+</p>
+<p>
+    o Go to setup
+</p>
+<p>
+    o Search APP in search box
+</p>
+<p>
+    o Go to Create =&gt; App and select Connected App
+</p>
+<p>
+    o Edit the previously created app
+</p>
+<p>
+    o Upload the certificate created in step # 2 in API (Enable OAuth Setting)
+    =&gt; Use Digital Signature
+</p>
+<p>
+· To generate access token, we will use third party tool    <a href="https://jwt.io">https://jwt.io</a>
+</p>
+<p>
+    o In real world we need to first generate signed base64URL encoded JWT
+</p>
+<p>
+    o This JWT is posted to salesforce for the validation
+</p>
+<p>
+    o Salesforce uses Consumer key and x509 certificate to validate JWT and
+    send back access token
+</p>
+<p>
+    o Will use this access token with salesforce API to get the data
+</p>
+<p>
+    <img
+        src="file:///C:/Users/TUPADH~1/AppData/Local/Temp/msohtmlclip1/01/clip_image005.jpg"
+        width="669"
+        height="554"
+        border="0"
+    />
+</p>
+<p>
+    <strong>JSON Web Token structure: </strong>
+</p>
+<p>
+    It contains three parts, separated by dots(.)
+</p>
+<p>
+    <strong>Header</strong>
+    :
+</p>
+<p>
+    {
+</p>
+<p>
+    “alg”: “RS256”,
+</p>
+<p>
+    “typ”: “JWT”
+</p>
+<p>
+    }
+</p>
+<p>
+    <strong>Payload</strong>
+    :
+</p>
+<p>
+    {
+</p>
+<p>
+    "iss":"CLIENT_SECRET",
+</p>
+<p>
+    "sub": "SALESFORCE_USERNAME",
+</p>
+<p>
+    "aud": "https://login.salesforce.com",
+</p>
+<p>
+    "exp": (Math.floor(Date.now()/1000) + 1800)
+</p>
+<p>
+    }
+</p>
+<p>
+    <strong>Signature</strong>
+    :
+</p>
+<p>
+    Signature is created using encode header, encoded payload, a secret, the
+    algorithm specified in the header and signed it with key.
+</p>
+<p>
+    RSASHA256(
+</p>
+<p>
+    base64UrlEncode(header) + "." +
+</p>
+<p>
+    base64UrlEncode(payload), Certificate, Private Key)
+</p>
+<p>
+    <strong>4. </strong>
+    <strong>Get the Access Token using above JWT (Postman):</strong>
+</p>
+<p>
+    <strong> </strong>
+</p>
+<p>
+    <img
+        src="file:///C:/Users/TUPADH~1/AppData/Local/Temp/msohtmlclip1/01/clip_image007.jpg"
+        width="561"
+        height="226"
+        border="0"
+    />
+</p>
+<p>
+    Above POST request returns with following output:
+</p>
+<p>
+    {
+</p>
+<p>
+    "access_token": "&lt;Token Value&gt;",
+</p>
+<p>
+    "scope": "web api",
+</p>
+<p>
+    "instance_url": "&lt;Your Instance of Salesforce Url&gt;",
+</p>
+<p>
+    "id": "&lt;Your Instance of Salesforce URL + ID&gt;",
+</p>
+<p>
+    "token_type": "Bearer"
+</p>
+<p>
+    }
+</p>
+<p>
+    <strong>5. </strong>
+    <strong>Get the report data using access token</strong>
+</p>
+<p>
+    <img
+        src="file:///C:/Users/TUPADH~1/AppData/Local/Temp/msohtmlclip1/01/clip_image009.jpg"
+        width="571"
+        height="206"
+        border="0"
+    />
+</p>
